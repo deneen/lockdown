@@ -1,0 +1,23 @@
+---
+- name: Set variables
+  include_vars: "{{ item }}"
+  with_items:
+    - "{{ ansible_os_family }}.yml"
+    - defaults.yml
+    
+- name: Set sshd options
+  become: yes
+  lineinfile:
+    path="{{ sshdconfig }}" regexp="^{{ item.name }}" line="{{ item.name }} {{ item.value }}" state=present create=yes
+  with_items:
+    "{{ sshd_settings }}"
+  notify: restart sshd
+
+- name: Set login.defs
+  become: yes
+  lineinfile:
+    path="{{ logindefs }}" regexp="^{{ item.name }}" line="{{ item.name }} {{ item.value }}" state=present create=yes
+  with_items:
+    "{{ logindef_settings }}"
+  
+- import_tasks: pam.yml

@@ -1,0 +1,11 @@
+---
+# hack I used to cleanup screwed up pam.d files
+
+- name: Remove pam_tally2 lines
+  become: yes
+  lineinfile:
+    path="/etc/pam.d/{{ item }}" regexp="pam_tally2.so" state=absent
+  with_items:
+    - system-auth
+    - password-auth
+

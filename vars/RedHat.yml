@@ -1,0 +1,9 @@
+module_path: 'pam_unix.so'
+tally_module: 'pam_tally2.so'
+tally_options: 'deny=5 onerr=fail silent unlock_time=3600'
+unix_options: 'sha512 try_first_pass shadow use_authtok remember=7'
+password_module: 'pam_pwquality.so'
+password_options: 'try_first_pass local_users_only retry=3 minlen=8 dcredit=-1 ucredit=0 lcredit=-1 ocredit=0'
+pam_files:
+  - system-auth
+  - password-auth

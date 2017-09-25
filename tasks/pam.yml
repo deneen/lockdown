@@ -1,0 +1,69 @@
+---
+- name: Add pam_tally2 auth rule
+  become: yes
+  pamd:
+    name: "{{ item }}"
+    type: auth
+    control: sufficient
+    module_path: "{{ module_path }}"
+    new_type: auth
+    new_control: required
+    new_module_path: "{{ tally_module }}"
+    module_arguments: "{{ tally_options }}"
+    state: before
+  with_items:
+    "{{ pam_files }}"
+    
+- name: Add pam_tally2 account rule
+  become: yes
+  pamd:
+    name: "{{ item }}"
+    type: account
+    control: required
+    module_path: "{{ module_path }}"
+    new_type: account
+    new_control: required
+    new_module_path: "{{ tally_module }}"
+    state: before
+  with_items:
+    "{{ pam_files }}"
+
+- name: Set pam_unix password options
+  become: yes
+  pamd:
+    name: "{{ item }}"
+    type: password
+    control: sufficient
+    module_path: "{{ module_path }}"
+    module_arguments: "{{ unix_options }}"
+    state: updated
+  with_items:
+    "{{ pam_files }}"
+    
+- name: Remove nullok from pam_unix password
+  become: yes
+  pamd:
+    name: "{{ item }}"
+    type: password
+    control: sufficient
+    module_path: "{{ module_path }}"
+    module_arguments: 'nullok'
+    state: args_absent
+  with_items:
+    "{{ pam_files }}"
+    
+- name: Set password complexity
+  become: yes
+  pamd:
+    name: "{{ item }}"
+    type: password
+    control: requisite
+    module_path: "{{ password_module }}"
+    module_arguments: "{{ password_options }}"
+    state: updated
+  with_items:
+    "{{ pam_files }}"
+
+
+    
+    
