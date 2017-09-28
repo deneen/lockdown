@@ -31,38 +31,44 @@
 - name: Set pam_unix password options
   become: yes
   pamd:
-    name: "{{ item }}"
+    name: "{{ item[0] }}"
     type: password
     control: sufficient
     module_path: "{{ module_path }}"
-    module_arguments: "{{ unix_options }}"
-    state: updated
-  with_items:
-    "{{ pam_files }}"
+    module_arguments: "{{ item[1] }}"
+    state: args_present
+    #   state: updated
+  with_nested:
+    - "{{ pam_files }}"
+    - "{{ unix_options }}"
     
 - name: Remove nullok from pam_unix password
   become: yes
   pamd:
-    name: "{{ item }}"
-    type: password
+    name: "{{ item[0] }}"
+    type: "{{ item[1] }}"
     control: sufficient
     module_path: "{{ module_path }}"
     module_arguments: 'nullok'
     state: args_absent
-  with_items:
-    "{{ pam_files }}"
+  with_nested:
+    - "{{ pam_files }}"
+    - [ 'auth', 'account', 'password', 'session' ]
     
 - name: Set password complexity
   become: yes
   pamd:
-    name: "{{ item }}"
+    name: "{{ item[0] }}"
     type: password
     control: requisite
-    module_path: "{{ password_module }}"
-    module_arguments: "{{ password_options }}"
-    state: updated
-  with_items:
-    "{{ pam_files }}"
+    module_path: "{{ item[2] }}"
+    module_arguments: "{{ item[1] }}"
+    state: args_present
+    #    state: updated
+  with_nested:
+    - "{{ pam_files }}"
+    - "{{ password_options }}"
+    - "{{ password_modules }}"
 
 
     
