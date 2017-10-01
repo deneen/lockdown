@@ -9,10 +9,22 @@
     new_type: auth
     new_control: required
     new_module_path: "{{ tally_module }}"
-    module_arguments: "{{ tally_options }}"
     state: before
   with_items:
     "{{ pam_files }}"
+
+- name: Add pam_tally2 auth args
+  become: yes
+  pamd:
+    name: "{{ item[0] }}"
+    type: auth
+    control: sufficient
+    module_path: "{{ module_path }}"
+    module_arguments: "{{ item[1] }}"
+    state: args_present
+  with_nested:
+    - "{{ pam_files }}"
+    - "{{ tally_options }}"
     
 - name: Add pam_tally2 account rule
   become: yes
@@ -37,7 +49,6 @@
     module_path: "{{ module_path }}"
     module_arguments: "{{ item[1] }}"
     state: args_present
-    #   state: updated
   with_nested:
     - "{{ pam_files }}"
     - "{{ unix_options }}"
@@ -64,7 +75,6 @@
     module_path: "{{ item[2] }}"
     module_arguments: "{{ item[1] }}"
     state: args_present
-    #    state: updated
   with_nested:
     - "{{ pam_files }}"
     - "{{ password_options }}"

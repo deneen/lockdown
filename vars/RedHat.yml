@@ -1,6 +1,10 @@
 module_path: 'pam_unix.so'
 tally_module: 'pam_tally2.so'
-tally_options: 'deny=5 onerr=fail silent unlock_time=3600'
+tally_options:
+  - deny=5
+  - onerr=fail
+  - silent
+  - unlock_time=3600
 unix_options:
   - sha512
   - try_first_pass
